@@ -87,7 +87,11 @@ function render(d, opts) {
 }
 
 const routes = allSeoRoutes()
-for (const d of routes) {
+// pages privées (panier, paiement, compte…) : générées aussi, pour qu'un rechargement renvoie un statut 200,
+// mais en noindex et absentes du sitemap
+const { STATIC_SEO, staticSeo } = seo
+const privateRoutes = Object.keys(STATIC_SEO).filter((p) => !STATIC_SEO[p].index).map((p) => staticSeo(p))
+for (const d of [...routes, ...privateRoutes]) {
   const file = d.path === '/' ? path.join(DIST, 'index.html') : path.join(DIST, d.path.replace(/^\//, ''), 'index.html')
   fs.mkdirSync(path.dirname(file), { recursive: true })
   fs.writeFileSync(file, render(d))
@@ -121,4 +125,4 @@ const robots = [
 fs.writeFileSync(path.join(DIST, 'robots.txt'), robots)
 
 await vite.close()
-console.log(`Pré-rendu terminé : ${routes.length} pages, sitemap.xml, robots.txt, 404.html`)
+console.log(`Pré-rendu terminé : ${routes.length} pages indexables + ${privateRoutes.length} pages privées, sitemap.xml, robots.txt, 404.html`)

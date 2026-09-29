@@ -2,10 +2,10 @@ import { useEffect } from 'react'
 import { CATEGORIES, CATEGORY_SEO, IMG, PRODUCTS, SALE_END, discountPct, fcfa, type Product } from './data/products'
 import { generateReviews } from './data/reviews'
 
-/** Domaine de production : à remplacer par le vrai nom de domaine avant la mise en ligne. */
+/** Domaine de production. Adresse Vercel pour l'instant : la remplacer par le vrai nom de domaine une fois acheté. */
 export const SITE = {
   name: 'StyleVibe',
-  url: 'https://stylevibe.bj',
+  url: 'https://black-fridayz.vercel.app',
   locale: 'fr_BJ',
   phone: '+22950000000',
   email: 'contact@stylevibe.bj',

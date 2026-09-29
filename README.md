@@ -15,7 +15,7 @@ npm test               # 41 tests
 ⚠️ Ne pas ouvrir le `index.html` **de la racine** par double-clic : c'est le fichier source. Utiliser `npm run dev`, ou `dist-offline/index.html` après `npm run build:offline`.
 
 ## Mise en ligne (Netlify, Vercel, Cloudflare Pages, GitHub Pages)
-1. **Changer le domaine** dans `src/seo.ts` (`SITE.url`, actuellement `https://stylevibe.bj`) puis relancer `npm run build`.
+1. **Changer le domaine** dans `src/seo.ts` (`SITE.url`, actuellement `https://black-fridayz.vercel.app`) puis relancer `npm run build`.
 2. Publier le dossier `dist/`. Les fichiers `public/_redirects` (Netlify) et `vercel.json` gèrent les URL inconnues ; `dist/404.html` sert GitHub Pages.
 3. Déclarer `https://<domaine>/sitemap.xml` dans Google Search Console et Bing Webmaster Tools.
 4. Remplacer les coordonnées de démonstration (`+229 50 00 00 00`, `contact@stylevibe.bj`, adresse) par les vraies, partout de façon identique (cohérence NAP pour le référencement local).

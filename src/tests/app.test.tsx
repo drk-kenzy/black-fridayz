@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
 import { useCart } from '../store/cart'
+import { SITE } from '../seo'
 import { useUi } from '../store/ui'
 
 const visit = (path: string) => {
@@ -80,7 +81,7 @@ describe('référencement dans le navigateur', () => {
   it('la fiche produit met à jour titre, description, canonique et JSON-LD', async () => {
     visit('/produit/montre-classic-gold')
     await waitFor(() => expect(document.title).toMatch(/montre classic gold/i))
-    expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute('href', 'https://stylevibe.bj/produit/montre-classic-gold')
+    expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute('href', `${SITE.url}/produit/montre-classic-gold`)
     expect(document.querySelector('meta[name="description"]')?.getAttribute('content')).toMatch(/59 900 FCFA/)
     const ld = [...document.querySelectorAll('script[data-seo-ld]')].map((s) => JSON.parse(s.textContent!))
     expect(ld.some((o) => o['@type'] === 'Product')).toBe(true)
