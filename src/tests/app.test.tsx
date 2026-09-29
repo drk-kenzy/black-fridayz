@@ -93,6 +93,20 @@ describe('référencement dans le navigateur', () => {
     await waitFor(() => expect(document.querySelector('meta[name="robots"]')?.getAttribute('content')).toMatch(/noindex/))
   })
 
+  it('en mode démo, tout le site est en noindex mais reste affiché normalement', async () => {
+    for (const path of ['/', '/collection', '/produit/montre-classic-gold']) {
+      const { unmount } = visit(path)
+      await waitFor(() => expect(document.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe('noindex,nofollow'))
+      expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
+      unmount()
+    }
+  })
+
+  it('n’affiche aucune mention « démonstration » aux visiteurs', () => {
+    visit('/')
+    expect(screen.queryByText(/site de démonstration/i)).not.toBeInTheDocument()
+  })
+
   it('une seule balise H1 par page', () => {
     for (const path of ['/', '/collection', '/produit/sneakers-urban-x', '/faq', '/a-propos']) {
       const { unmount } = visit(path)

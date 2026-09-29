@@ -20,7 +20,7 @@ if (!fs.existsSync(path.join(DIST, 'index.html'))) {
 const vite = await createServer({ server: { middlewareMode: true }, appType: 'custom', logLevel: 'error' })
 const seo = await vite.ssrLoadModule('/src/seo.ts')
 const data = await vite.ssrLoadModule('/src/data/products.ts')
-const { SITE, abs, allSeoRoutes } = seo
+const { SITE, abs, allSeoRoutes, DEMO_MODE } = seo
 const { PRODUCTS, CATEGORIES, fcfa, discountPct } = data
 
 const template = fs.readFileSync(path.join(DIST, 'index.html'), 'utf8')
@@ -33,7 +33,7 @@ function headBlock(d, { noindex = d.noindex } = {}) {
   const lines = [
     `<title>${esc(d.title)}</title>`,
     `<meta name="description" content="${esc(d.description)}" />`,
-    `<meta name="robots" content="${noindex ? 'noindex,follow' : 'index,follow,max-image-preview:large'}" />`,
+    `<meta name="robots" content="${DEMO_MODE ? 'noindex,nofollow' : noindex ? 'noindex,follow' : 'index,follow,max-image-preview:large'}" />`,
     `<link rel="canonical" href="${url}" />`,
     `<meta property="og:title" content="${esc(d.title)}" />`,
     `<meta property="og:description" content="${esc(d.description)}" />`,
@@ -106,23 +106,25 @@ const priority = (p) => (p === '/' ? '1.0' : p.startsWith('/produit/') ? '0.9' :
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
   routes.map((d) => `  <url><loc>${abs(d.path)}</loc><lastmod>${today}</lastmod><changefreq>${d.path.startsWith('/produit/') ? 'weekly' : 'monthly'}</changefreq><priority>${priority(d.path)}</priority></url>`).join('\n') +
   `\n</urlset>\n`
-fs.writeFileSync(path.join(DIST, 'sitemap.xml'), sitemap)
-
-// robots.txt
-const robots = [
-  'User-agent: *',
-  'Allow: /',
-  'Disallow: /panier',
-  'Disallow: /paiement',
-  'Disallow: /confirmation',
-  'Disallow: /compte',
-  'Disallow: /suivi',
-  'Disallow: /favoris',
-  '',
-  `Sitemap: ${SITE.url}/sitemap.xml`,
-  '',
-].join('\n')
+// robots.txt : en mode démo, tout le site est fermé aux robots et le sitemap n'est pas publié
+const robots = DEMO_MODE
+  ? ['# Site de démonstration : ne pas indexer', 'User-agent: *', 'Disallow: /', ''].join('\n')
+  : [
+      'User-agent: *',
+      'Allow: /',
+      'Disallow: /panier',
+      'Disallow: /paiement',
+      'Disallow: /confirmation',
+      'Disallow: /compte',
+      'Disallow: /suivi',
+      'Disallow: /favoris',
+      '',
+      `Sitemap: ${SITE.url}/sitemap.xml`,
+      '',
+    ].join('\n')
 fs.writeFileSync(path.join(DIST, 'robots.txt'), robots)
+if (DEMO_MODE) fs.rmSync(path.join(DIST, 'sitemap.xml'), { force: true })
+else fs.writeFileSync(path.join(DIST, 'sitemap.xml'), sitemap)
 
 await vite.close()
-console.log(`Pré-rendu terminé : ${routes.length} pages indexables + ${privateRoutes.length} pages privées, sitemap.xml, robots.txt, 404.html`)
+console.log(`Pré-rendu terminé : ${routes.length} pages + ${privateRoutes.length} pages privées, robots.txt, 404.html${DEMO_MODE ? ' (MODE DÉMO : site noindex, sans sitemap)' : ', sitemap.xml'}`)

@@ -13,6 +13,13 @@ export const SITE = {
   ogImage: IMG.hero,
 }
 
+/**
+ * Mode démonstration : le site reste visible et utilisable pour qui a le lien, mais il est caché des moteurs de
+ * recherche (noindex + robots.txt « Disallow: / ») et n'expose plus les avis ni la note dans les données structurées,
+ * puisque ce sont des données fictives. Passer à `false` le jour où le site devient réel (vrais produits, vrais avis).
+ */
+export const DEMO_MODE = true
+
 export const abs = (path: string) => SITE.url + (path.startsWith('/') ? path : `/${path}`)
 
 export interface SeoData {
@@ -76,8 +83,8 @@ export const itemListLd = (name: string, products: Product[]) => ({
   itemListElement: products.map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: abs(`/produit/${p.id}`), name: p.name })),
 })
 
-export function productLd(p: Product, now = Date.now()) {
-  const reviews = generateReviews(p, now).slice(0, 5)
+export function productLd(p: Product, now = Date.now(), withReviews = !DEMO_MODE) {
+  const reviews = withReviews ? generateReviews(p, now).slice(0, 5) : []
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -116,15 +123,17 @@ export function productLd(p: Product, now = Date.now()) {
         returnFees: 'https://schema.org/ReturnShippingFees',
       },
     },
-    aggregateRating: { '@type': 'AggregateRating', ratingValue: String(p.rating), reviewCount: String(p.reviews), bestRating: '5', worstRating: '1' },
-    review: reviews.map((r) => ({
-      '@type': 'Review',
-      author: { '@type': 'Person', name: r.name },
-      datePublished: new Date(r.date).toISOString().slice(0, 10),
-      name: r.title,
-      reviewBody: r.text,
-      reviewRating: { '@type': 'Rating', ratingValue: String(r.rating), bestRating: '5', worstRating: '1' },
-    })),
+    ...(withReviews && {
+      aggregateRating: { '@type': 'AggregateRating', ratingValue: String(p.rating), reviewCount: String(p.reviews), bestRating: '5', worstRating: '1' },
+      review: reviews.map((r) => ({
+        '@type': 'Review',
+        author: { '@type': 'Person', name: r.name },
+        datePublished: new Date(r.date).toISOString().slice(0, 10),
+        name: r.title,
+        reviewBody: r.text,
+        reviewRating: { '@type': 'Rating', ratingValue: String(r.rating), bestRating: '5', worstRating: '1' },
+      })),
+    }),
   }
 }
 
@@ -213,7 +222,7 @@ export function applySeo(d: SeoData) {
   const image = d.image ?? SITE.ogImage
   document.title = d.title
   setMeta('name', 'description', d.description)
-  setMeta('name', 'robots', d.noindex ? 'noindex,follow' : 'index,follow,max-image-preview:large')
+  setMeta('name', 'robots', DEMO_MODE ? 'noindex,nofollow' : d.noindex ? 'noindex,follow' : 'index,follow,max-image-preview:large')
   let link = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]')
   if (!link) { link = document.createElement('link'); link.rel = 'canonical'; document.head.appendChild(link) }
   link.href = url

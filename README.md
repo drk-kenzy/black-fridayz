@@ -14,10 +14,13 @@ npm test               # 41 tests
 
 ⚠️ Ne pas ouvrir le `index.html` **de la racine** par double-clic : c'est le fichier source. Utiliser `npm run dev`, ou `dist-offline/index.html` après `npm run build:offline`.
 
+## Mode démonstration (activé)
+`DEMO_MODE = true` dans `src/seo.ts` : le site reste **visible et utilisable par qui a le lien**, mais il est caché des moteurs de recherche (`noindex,nofollow` sur toutes les pages, `robots.txt` avec `Disallow: /`, pas de sitemap). Les avis et la note ne sont plus exposés dans les données structurées. Rien n'est affiché aux visiteurs : la démonstration n'est visible que dans le code et ce README. Tout le SEO reste en place : le jour où le site devient réel (vrais produits, vrais avis, vrai domaine), passer `DEMO_MODE` à `false` et relancer le build.
+
 ## Mise en ligne (Netlify, Vercel, Cloudflare Pages, GitHub Pages)
 1. **Changer le domaine** dans `src/seo.ts` (`SITE.url`, actuellement `https://black-fridayz.vercel.app`) puis relancer `npm run build`.
 2. Publier le dossier `dist/`. Les fichiers `public/_redirects` (Netlify) et `vercel.json` gèrent les URL inconnues ; `dist/404.html` sert GitHub Pages.
-3. Déclarer `https://<domaine>/sitemap.xml` dans Google Search Console et Bing Webmaster Tools.
+3. (Hors mode démo) Déclarer `https://<domaine>/sitemap.xml` dans Google Search Console et Bing Webmaster Tools.
 4. Remplacer les coordonnées de démonstration (`+229 50 00 00 00`, `contact@stylevibe.bj`, adresse) par les vraies, partout de façon identique (cohérence NAP pour le référencement local).
 
 ## Référencement (SEO) et conversion

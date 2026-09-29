@@ -161,7 +161,7 @@ export function Footer({ minimal = false }: { minimal?: boolean }) {
             {!minimal && <p className={`flex items-center gap-3 ${link}`}><MapPin size={15} /> Fidjrossè, Cotonou, Bénin</p>}
           </div>
         </div>
-        <div className="mt-14 flex items-center justify-between border-t border-white/15 pt-7 text-[13px] text-white/50">
+        <div className="mt-14 flex items-center justify-between border-t border-white/15 pt-7 text-[13px] text-white/60">
           <p>© {new Date().getFullYear()} StyleVibe. Tous droits réservés.{minimal ? '' : ' Conçu pour le Bénin.'}</p>
           <div className="flex gap-3">
             <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram" className="grid size-9 place-items-center rounded-full bg-white/10 hover:bg-white/20"><Instagram size={15} /></a>

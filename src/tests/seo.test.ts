@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { CATEGORIES, PRODUCTS } from '../data/products'
-import { SITE, abs, allSeoRoutes, breadcrumbLd, faqLd, productLd } from '../seo'
+import { DEMO_MODE, SITE, abs, allSeoRoutes, breadcrumbLd, faqLd, productLd } from '../seo'
 
 describe('référencement', () => {
   const routes = allSeoRoutes()
@@ -29,7 +29,7 @@ describe('référencement', () => {
 
   it('les fiches produit ont des données structurées Product complètes', () => {
     for (const p of PRODUCTS) {
-      const ld = productLd(p) as Record<string, any>
+      const ld = productLd(p, Date.now(), true) as Record<string, any>
       expect(ld['@type']).toBe('Product')
       expect(ld.offers.priceCurrency).toBe('XOF')
       expect(ld.offers.price).toBe(String(p.price))
@@ -38,6 +38,17 @@ describe('référencement', () => {
       expect(ld.review).toHaveLength(5)
       expect(ld.image.length).toBeGreaterThan(0)
       expect(() => JSON.stringify(ld)).not.toThrow()
+    }
+  })
+
+  it('en mode démo, aucune note ni avis fictif n’est exposé dans les données structurées', () => {
+    expect(DEMO_MODE).toBe(true)
+    for (const p of PRODUCTS) {
+      const ld = productLd(p) as Record<string, any>
+      expect(ld['@type']).toBe('Product')
+      expect(ld.offers.price).toBe(String(p.price))
+      expect(ld.aggregateRating).toBeUndefined()
+      expect(ld.review).toBeUndefined()
     }
   })
 
