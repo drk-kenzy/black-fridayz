@@ -1,0 +1,11 @@
+{
+  "name": "StyleVibe",
+  "short_name": "StyleVibe",
+  "description": "Boutique de mode en ligne au Bénin. Black Friday jusqu'à -60%.",
+  "lang": "fr",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf6ef",
+  "theme_color": "#121212",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
